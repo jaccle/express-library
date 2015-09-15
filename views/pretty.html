@@ -1,29 +1,144 @@
-<% layout('layout') -%>
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
-        <div class="panel panel-primary">
-            <!-- Default panel contents -->
-            <div class="panel-heading"><b>Edit</b>
-                <%= book.title %>
-            </div>
-            <div class="panel-body">
-            </div>
-            <!-- form -->
-            <form action="/book/<%= book.bookID %>?_method=put" method="POST" class="form-inline" style="margin: 2%;">
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="Title" value="<%= book.title %>">
-                </div>
-                <div class="form-group">
-                    <label for="author">Author</label>
-                    <input type="text" class="form-control" id="author" name="author" placeholder="Author" value="<%= book.author %>">
-                </div>
-                <div class="form-group">
-                    <label for="year">Year</label>
-                    <input type="text" class="form-control" id="year" name="year" placeholder="Year" value="<%= book.year %>">
-                </div>
-                <button type="submit" class="btn btn-primary" style="margin: 2%;">Update Book</button>
-            </form>
-        </div>
-    </div>
-    <div class="col-sm-3"></div>
+var express = require('express'),
+    engine = require('ejs-mate'),
+    methodOverride = require('method-override'),
+    bodyParser = require('body-parser'),
+    mongoose = require("mongoose"),
+    app = express();
+
+app.engine('ejs', engine);
+ 
+app.set('views',__dirname + '/views');
+app.set("view engine", "ejs");
+
+mongoose.connect("mongodb://localhost/dog_park");
+mongoose.set('debug', true);
+
+var bookSchema = new mongoose.Schema({
+    title: String,
+    author: String,
+    year: Number
+});
+
+var Book = mongoose.model("Book", bookSchema);
+
+//javascript link
+app.use(express.static(__dirname + "/public"));
+
+var library = [{
+        bookID: 1000,
+        title: "Alice's Adventures in Wonderland",
+        author: 'Lewis Carroll',
+        year: 1865
+    }];
+var title;
+var author;
+var year;
+var bookID = 1000;
+var certainBook;
+
+
+// method-override
+app.use(methodOverride('_method'));
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // for parsing application/json
+
+app.get('/', function(req, res) {
+    res.render('index', {
+        library: library
+    });
+});
+
+// Add one book
+app.post('/book', function (req, res) {
+    title = req.body.title;
+    author = req.body.author;
+    year = req.body.year;
+    bookID += 1;
+    newBook = {
+        bookID: bookID,
+        title: title,
+        author: author,
+        year: year
+    };
+    library.push(newBook);
+    console.log(req.body);
+    if(!book){
+        res.render('404');
+    }
+    res.redirect("/");
+});
+
+// Get one book
+
+app.get('/book/:id/show', function(req, res) {
+    var id = req.params.id;
+    library.forEach(function (el) {
+        if(el.bookID === Number(id)) {
+            book = el;
+        }
+    });
+    res.render('show', {
+        book: book
+    });
+});
+
+// Update one book
+app.get('/book/:id/edit', function (req, res) {
+    var id = req.params.id;
+    library.forEach(function (el) {
+        if(el.bookID === Number(id)) {
+            book = el;
+        }
+    });
+    if(!book){
+        res.render('404');
+    }
+    res.render('edit', {
+        book: book
+    });
+
+});
+
+app.put('/book/:id', function (req, res) {
+var id = req.params.id;
+var title = req.body.title,
+    author = req.body.author,
+    year = req.body.year;
+
+    library.forEach(function (el) {
+        if(el.bookID === Number(id)) {
+            el.title = title;
+            el.author = author;
+            el.year = year;
+            book = el;
+        }
+    });
+    if(!book){
+        res.render('404');
+    }
+
+    res.redirect("/");
+});
+
+// Delete one book
+app.delete('/book/:id', function (req, res) {
+var id = req.params.id;
+    library.forEach(function (el) {
+        if(el.bookID === Number(id)) {
+            library.splice(library.indexOf(el), 1); 
+        }
+    });
+    if(!book){
+        res.render('404');
+    }
+    res.redirect("/");
+
+});
+
+
+
+app.listen(3000, function() {
+    console.log("Starting a server on localhost: 3000");
+});
