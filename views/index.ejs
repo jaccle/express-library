@@ -1,54 +1,52 @@
 <% layout('layout') -%>
-<script src="sorttable.js"></script>
-
-<div class="container-fluid">
-<div class="row">
-  <div class="col-sm-6">
-  <div class="jumbotron">
-
-<div class="form-group form-group-lg" style="padding: 2%">
-  <h2>Add a Book</h2>
-<form action="/book" method="POST">
-	<label class="control-label"for="name">Title:</label>
-	<input type="text" id="name" name="title" placeholder="Alice's Adventures in Wonderland" class="form-control">
-	<label for="author">Author:</label>
-	<input type="text" id="author" name="author"  placeholder="Lewis Carroll" class="form-control">
-	<label for="year">Year:</label>
-	<input type="text" id="year" name="year"  placeholder="1865" class="form-control">
-	<input type="submit" id="add" value="Add book" class="btn btn-primary btn-lg" style="margin: 2%">
-</form>
-</div>
-
-</div>
-</div>
-<div class="col-sm-6">
-
-<table class="table table-hover table-condensed sortable">
-	<tr>
-		<th class="col-sm-1">#</th>
-		<th class="col-sm-4">Title</th>
-		<th class="col-sm-4">Author</th>
-		<th class="col-sm-1">Year</th>
-		<th class="col-sm-1">Edit</th>
-		<th class="col-sm-1">Delete</th>
-	</tr>
-	
-	<% library.forEach(function (newBook){ %>
-	<tr>
-		<td class="col-sm-1"><%= newBook.bookID %></td>
-		<td class="col-sm-4"><%= newBook.title %></td>
-		<td class="col-sm-4"><%= newBook.author %></td>
-		<td class="col-sm-1"><%= newBook.year %></td>
-		<td class="col-sm-1"><a href="/book/<%= newBook.bookID %>/edit">Edit</a></td>
-		<td class="col-sm-1" style="text-align: center">
-		<form action="/book/<%= newBook.bookID %>" method="POST"><button type="submit">
-		<span class="glyphicon glyphicon-remove"></span></button></form></td>
-	</tr>
-	<% }); %>
-	
-
-</table>
-</div>
-
-</div>
-</div>
+    <script src="sorttable.js"></script>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <div class="form-group form-group-lg" style="padding: 2%">
+                        <h2>Add a Book</h2>
+                        <form action="/book" method="POST">
+                            <label class="control-label" for="name">Title:</label>
+                            <input type="text" id="name" name="title" placeholder="Alice's Adventures in Wonderland" class="form-control">
+                            <label for="author">Author:</label>
+                            <input type="text" id="author" name="author" placeholder="Lewis Carroll" class="form-control">
+                            <label for="year">Year:</label>
+                            <input type="text" id="year" name="year" placeholder="1865" class="form-control">
+                            <input type="submit" id="add" value="Add book" class="btn btn-primary btn-lg" style="margin: 2%">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <table class="table table-hover table-condensed sortable">
+                    <tr>
+                        <th class="col-sm-1">#</th>
+                        <th class="col-sm-4">Title</th>
+                        <th class="col-sm-3">Author</th>
+                        <th class="col-sm-1">Year</th>
+                        <th class="col-sm-1">View Only</th>
+                        <th class="col-sm-1">Edit</th>
+                        <th class="col-sm-1">Delete</th>
+                    </tr>
+                    <% library.forEach(function (newBook){ %>
+                        <tr>
+                            <td class="col-sm-1"><%= newBook.bookID %></td>
+							<td class="col-sm-4"><%= newBook.title %></td>
+							<td class="col-sm-3"><%= newBook.author %></td>
+							<td class="col-sm-1"><%= newBook.year %></td>
+							<td class="col-sm-1">
+								<a href="/book/<%= newBook.bookID %>/show">View</a>
+							</td>
+							<td class="col-sm-1"><a href="/book/<%= newBook.bookID %>/edit">Edit</a></td>
+							<td class="col-sm-1" style="text-align: center">
+							<form action="/book/<%= newBook.bookID %>?_method=delete" method="POST"><button type="submit">
+							<span class="glyphicon glyphicon-remove"></span></button>
+							</form></td>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </table>
+            </div>
+        </div>
+    </div>

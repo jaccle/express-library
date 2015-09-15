@@ -1,8 +1,8 @@
 var express = require('express'),
 	engine = require('ejs-mate'),
+	methodOverride = require('method-override'),
+	bodyParser = require('body-parser'),
     app = express();
-
-var bodyParser = require('body-parser');
 
 app.engine('ejs', engine);
  
@@ -24,6 +24,10 @@ var year;
 var bookID = 1000;
 var certainBook;
 
+
+// method-override
+app.use(methodOverride('_method'));
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // for parsing application/json
@@ -33,9 +37,6 @@ app.get('/', function(req, res) {
         library: library
     });
 });
-
-// List all books
-
 
 // Add one book
 app.post('/book', function (req, res) {
@@ -51,36 +52,61 @@ app.post('/book', function (req, res) {
     };
     library.push(newBook);
     console.log(req.body);
+    if(!book){
+		res.render('404');
+	}
 	res.redirect("/");
 });
 
 // Get one book
-app.get('/book/:id', function (req, res) {
-	res.redirect("/");
+
+app.get('/book/:id/show', function(req, res) {
+    var id = req.params.id;
+	library.forEach(function (el) {
+		if(el.bookID === Number(id)) {
+			book = el;
+		}
+	});
+    res.render('show', {
+        book: book
+    });
 });
 
 // Update one book
 app.get('/book/:id/edit', function (req, res) {
+	var id = req.params.id;
 	library.forEach(function (el) {
 		if(el.bookID === Number(id)) {
-			el = certainBook;
+			book = el;
 		}
 	});
+	if(!book){
+		res.render('404');
+	}
 	res.render('edit', {
-        newBook: newBook
+        book: book
     });
+
 });
 
 app.put('/book/:id', function (req, res) {
 var id = req.params.id;
+var title = req.body.title,
+	author = req.body.author,
+	year = req.body.year;
+
 	library.forEach(function (el) {
-			el.title = req.body.el.title;
-			el.author = req.body.el.author;
-			el.year = req.body.el.year;
+		if(el.bookID === Number(id)) {
+			el.title = title;
+			el.author = author;
+			el.year = year;
+			book = el;
+		}
 	});
-	if(!certainBook){
+	if(!book){
 		res.render('404');
 	}
+
 	res.redirect("/");
 });
 
@@ -88,10 +114,13 @@ var id = req.params.id;
 app.delete('/book/:id', function (req, res) {
 var id = req.params.id;
 	library.forEach(function (el) {
-		if(el.bookID === id) {
+		if(el.bookID === Number(id)) {
 			library.splice(library.indexOf(el), 1);	
 		}
 	});
+	if(!book){
+		res.render('404');
+	}
 	res.redirect("/");
 
 });

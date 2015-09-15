@@ -1,0 +1,37 @@
+<% layout('layout') -%>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <div class="panel panel-danger">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><b>ID Number</b></div>
+            <div class="panel-body">
+                <p><%= book.bookID %></p>
+            </div>
+        </div>
+
+        <div class="panel panel-warning">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><b>Book Title</b></div>
+            <div class="panel-body">
+                <p><%= book.title %></p>
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><b>Author</b></div>
+            <div class="panel-body">
+                <p><%= book.author %></p>
+            </div>
+        </div>
+
+        <div class="panel panel-success">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><b>Year Published</b></div>
+            <div class="panel-body">
+                <p><%= book.year %></p>
+            </div>
+        </div>
+		<a href="/book/<%= book.bookID %>/edit"><button type="submit" class="btn btn-default btn-lg btn-block">Edit This Book</button></a>
+    </div>
+    <div class="col-sm-3"></div>
