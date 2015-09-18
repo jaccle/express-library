@@ -1,128 +1,111 @@
 var express = require('express'),
-	engine = require('ejs-mate'),
-	methodOverride = require('method-override'),
-	bodyParser = require('body-parser'),
+    engine = require('ejs-mate'),
+    methodOverride = require('method-override'),
+    bodyParser = require('body-parser'),
+    mongoose = require("mongoose"),
+    db = require('./models'),
     app = express();
+var request = require('request');
 
 app.engine('ejs', engine);
- bzzzzzzzzzz
-app.set('views',__dirname + '/views');
+
+app.set('views', __dirname + '/views');
 app.set("view engine", "ejs");
 
-//javascript link
-app.use(express.static(__dirname + "/public"));
 
-var library = [{
-        bookID: 1000,
-        title: "Alice's Adventures in Wonderland",
-        author: 'Lewis Carroll',
-        year: 1865
-    }];
-var title;
-var author;
-var year;
-var bookID = 1000;
-var certainBook;
+//stylesheet link
+app.use(express.static(__dirname + "/public"));
 
 
 // method-override
 app.use(methodOverride('_method'));
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json()); // for parsing application/json
 
+app.get('/searchresults', function(req, res) {
+    var query = req.query.search;
+    console.log(query);
+    var url = 'http://www.omdbapi.com/?t=' + query;
+    request(url, function(err, omd_res, body) {
+        if (err) {
+            console.log("Error, sorry"); //response
+        } else if (!err && omd_res.statusCode === 200) {
+            console.log(body);
+            res.render('results', {
+                movieGrab: JSON.parse(body)
+            }); //pos body
+        }
+    });
+});
+
+
 app.get('/', function(req, res) {
-    res.render('index', {
-        library: library
+    db.Movie.find({}, function(err, doc) {
+        console.log(doc);
+        res.render('index', {
+            movies: doc
+        });
     });
 });
 
-// Add one book
-app.post('/book', function (req, res) {
-	title = req.body.title;
-	author = req.body.author;
-	year = req.body.year;
-	bookID += 1;
-	newBook = {
-        bookID: bookID,
-        title: title,
-        author: author,
-        year: year
-    };
-    library.push(newBook);
+// Add one movie
+app.post('/movies/:id', function(req, res) {
     console.log(req.body);
-    if(!book){
-		res.render('404');
-	}
-	res.redirect("/");
+    db.Movie.create(req.body.movie, function(err, doc) {
+        res.redirect("/");
+    });
+    console.log(req.body);
 });
 
-// Get one book
-
-app.get('/book/:id/show', function(req, res) {
+// Get one movie
+app.get('/movies/:id/', function(req, res) {
     var id = req.params.id;
-	library.forEach(function (el) {
-		if(el.bookID === Number(id)) {
-			book = el;
-		}
-	});
-    res.render('show', {
-        book: book
+    db.Movie.findById(id, function(err, doc) {
+        if (doc) {
+            res.render('show', {
+                movie: doc
+            });
+        } else {
+            res.render('404');
+        }
     });
 });
 
-// Update one book
-app.get('/book/:id/edit', function (req, res) {
-	var id = req.params.id;
-	library.forEach(function (el) {
-		if(el.bookID === Number(id)) {
-			book = el;
-		}
-	});
-	if(!book){
-		res.render('404');
-	}
-	res.render('edit', {
-        book: book
+// Update one movie
+// app.get('/movies/:id', function(req, res) {
+//     var id = req.params.id;
+//     db.Movie.findById(id, function(err, doc) {
+//         res.redirect('/');
+//     });
+// });
+
+// app.put('/movies/:id', function(req, res) {
+//     var id = req.params.id;
+//     var title = req.body.title,
+//         author = req.body.author,
+//         year = req.body.year;
+//     db.Movie.findByIdAndUpdate(id, req.body, function(err, doc) {
+//         if (doc) {
+//             res.redirect("/");
+
+//         } else {
+//             res.render('404');
+//         }
+//     });
+// });
+
+// Delete one movie
+app.delete('/movies/:id', function(req, res) {
+    var id = req.params.id;
+    db.Movie.findByIdAndRemove(id, req.body, function(err, doc) {
+        if (doc) {
+            res.redirect("/");
+        }
     });
-
-});
-
-app.put('/book/:id', function (req, res) {
-var id = req.params.id;
-var title = req.body.title,
-	author = req.body.author,
-	year = req.body.year;
-
-	library.forEach(function (el) {
-		if(el.bookID === Number(id)) {
-			el.title = title;
-			el.author = author;
-			el.year = year;
-			book = el;
-		}
-	});
-	if(!book){
-		res.render('404');
-	}
-
-	res.redirect("/");
-});
-
-// Delete one book
-app.delete('/book/:id', function (req, res) {
-var id = req.params.id;
-	library.forEach(function (el) {
-		if(el.bookID === Number(id)) {
-			library.splice(library.indexOf(el), 1);	
-		}
-	});
-	if(!book){
-		res.render('404');
-	}
-	res.redirect("/");
-
 });
 
 

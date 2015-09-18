@@ -1,37 +1,34 @@
 <% layout('layout') -%>
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
-        <div class="panel panel-danger">
-            <!-- Default panel contents -->
-            <div class="panel-heading"><b>ID Number</b></div>
-            <div class="panel-body">
-                <p><%= book.bookID %></p>
-            </div>
-        </div>
-
+    <div class="col-sm-1"></div>
+    <div class="col-sm-4">
+        <img src="<%= movie.Poster %>" alt="movie poster" class="img-responsive center-block">
+    </div>
+    <div class="col-sm-1"></div>
+    <div class="col-sm-6" style="color: #555;">
         <div class="panel panel-warning">
             <!-- Default panel contents -->
-            <div class="panel-heading"><b>Book Title</b></div>
+            <div class="panel-heading"><b>Movie Title</b></div>
             <div class="panel-body">
-                <p><%= book.title %></p>
+                <dl class="dl-horizontal">
+                    <dt>Title</dt>
+                    <dd><%= movie.Title %></dd>
+                    <dt>Year</dt>
+                    <dd><%= movie.Year %></dd>
+                    <dt>Director</dt>
+                    <dd><%= movie.Director %></dd>
+                    <dt>Rating</dt>
+                    <dd><%= movie.Rated %></dd>
+                    <dt>Genre</dt>
+                    <dd><%= movie.Genre %></dd>
+                    <dt>Actors</dt>
+                    <dd><%= movie.Actors %></dd>
+                    <dt>Awards</dt>
+                    <dd><%= movie.Awards %></dd>
+                    <dt>IMDB Rating</dt>
+                    <dd><%= movie.imdbRating %></dd>
+                    <dt>Plot</dt>
+                    <dd><%= movie.Plot %></dd>
+                </dl>
             </div>
         </div>
-
-        <div class="panel panel-info">
-            <!-- Default panel contents -->
-            <div class="panel-heading"><b>Author</b></div>
-            <div class="panel-body">
-                <p><%= book.author %></p>
-            </div>
-        </div>
-
-        <div class="panel panel-success">
-            <!-- Default panel contents -->
-            <div class="panel-heading"><b>Year Published</b></div>
-            <div class="panel-body">
-                <p><%= book.year %></p>
-            </div>
-        </div>
-		<a href="/book/<%= book.bookID %>/edit"><button type="submit" class="btn btn-default btn-lg btn-block">Edit This Book</button></a>
     </div>
-    <div class="col-sm-3"></div>
